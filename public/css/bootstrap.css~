@@ -5451,7 +5451,7 @@ a.list-group-item-success .list-group-item-heading {
 }
 
 a.list-group-item-success:hover, a.list-group-item-success:focus {
-    color: #3c763d;
+    color: #f8aba6;
     background-color: #d0e9c6
 }
 
