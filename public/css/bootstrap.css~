@@ -3198,8 +3198,8 @@ textarea.input-lg, select[multiple].input-lg {
 
 .btn-primary {
     color: #fff;
-    background-color: #f58f98;
-    border-color: #16a090;
+    background-color: #f8aba6;
+    border-color: #f58f98;
 }
 
 .btn-primary:hover, .btn-primary:focus, .btn-primary:active, .btn-primary.active,
@@ -5451,7 +5451,7 @@ a.list-group-item-success .list-group-item-heading {
 }
 
 a.list-group-item-success:hover, a.list-group-item-success:focus {
-    color: #f8aba6;
+    color: #3c763d;
     background-color: #d0e9c6
 }
 

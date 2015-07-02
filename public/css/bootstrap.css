@@ -3198,15 +3198,15 @@ textarea.input-lg, select[multiple].input-lg {
 
 .btn-primary {
     color: #fff;
-    background-color: #f58f98;
-    border-color: #16a090;
+    background-color: #f8aba6;
+    border-color: #f8aba6;
 }
 
 .btn-primary:hover, .btn-primary:focus, .btn-primary:active, .btn-primary.active,
 .open>.dropdown-toggle.btn-primary {
     color: #fff;
-    background-color: #f8aba6;
-    border-color: #f8aba6;
+    background-color: #f58f98;
+    border-color: #f58f98;
 }
 
 .btn-primary:active, .btn-primary.active, .open>.dropdown-toggle.btn-primary {
