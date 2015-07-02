@@ -30,9 +30,12 @@ titlename: 关于
 <p style="line-height: 2em;">
     <span style="font-family:微软雅黑, Microsoft YaHei"><span style="font-size: 18px;">Q &nbsp;Q &nbsp;:1277044554</span></span>
 </p>
+<p style="line-height: 2em;">
+    <span style="font-family:微软雅黑, Microsoft YaHei"><span style="font-size: 18px;">微信：gonghuiyun0610</span></span>
+</p>
 
 
-<center><img src="/public/img/jianjie.jpg" style="width:30%"></center>
+<left><img src="/public/img/jianjie.jpg" style="width:30%"></left>
 
 <hr>
 <a href="{{ site.author.weibo }}" target="_blank">
