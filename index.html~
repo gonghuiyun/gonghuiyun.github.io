@@ -4,7 +4,8 @@ title: <i class="fa fa-home fa-lg"></i>
 titlename: 首页
 ---
 <!--<br>--> 
-<center><h3><font color="#000080">龚</font><font color="#FFA500">慧</font><font color="#2E8B57">芸</font><font color="#F08080">:&nbsp</font><font color="#00CED1">The&nbsp</font><font color="red">best&nbsp</font><font color="#BA55D3">is&nbsp</font><font color="#601986">yet&nbsp</font><font color="#556fb5">to&nbsp</font><font color="#fa1089">come</font></h3></center>
+<left><h1><font color="#FFA500">慧</font><font color="#2E8B57">芸</font><font color="#F08080">:</br></font></h1></left>
+<left><h1><font color="#00CED1">The&nbsp</font><font color="red">best&nbsp</font><font color="#BA55D3">is&nbsp</font><font color="#601986">yet&nbsp</font><font color="#556fb5">to&nbsp</font><font color="#fa1089">come</font><left><h1>
 
 <div class="row">
   <div class="col-md-12">
