@@ -5,9 +5,7 @@ markdown: redcarpet
 # 作者信息
 author: 
   name: 龚慧芸
-  link: https://gonghuiyun.github.io/
   weibo: http://weibo.com/gonghuiyun/profile?rightmod=1&wvr=6&mod=personinfo
-  github: https://github.com/gonghuiyun
   music: http://5sing.kugou.com/49729262/default.html  
 
 # 站点信息
@@ -22,7 +20,7 @@ favicon: /public/img/home.png
 
 # google analytics 设置
 ga:
-  id: UA-54262064-1 
+  id: UA-64712754-1 
   url: gonghuiyun.github.io
 
 # disqus 设置
@@ -30,10 +28,11 @@ disqus:
   shortname: gonghuiyun
 
 # 主题设置，自动激活某个标签
-active: 读书
+active: 
 
 # 首页除了最新文章外显示分类
 cates: 
+- 博客
 
 # 中文本地化
 locals:
