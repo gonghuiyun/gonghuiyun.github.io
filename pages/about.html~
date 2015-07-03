@@ -28,7 +28,7 @@ titlename: 关于
 	<span style="font-family:微软雅黑, Microsoft YaHei;"><span style="font-size:18px;">微信：gonghuiyun0610</span></span>
 </p>
 <p>
-	<span style="font-size:18px;">新浪微博：<a href="http://weibo.com/gonghuiyun/profile?rightmod=1&amp;wvr=6&amp;mod=personinfo" target="_blank">http://weibo.com/gonghuiyun/profile?rightmod=1&amp;wvr=6&amp;mod=personinfo</a></span>
+	<span style="font-size:18px;">新浪微博：<a href="http://goo.gl/y8HwFF" target="_blank">http://goo.gl/y8HwFF</a></span>
 </p>
 <p>
 	<span style="font-size:18px;">5sing主页：<a href="http://5sing.kugou.com/49729262/default.html" target="_blank">http://5sing.kugou.com/49729262/default.html</a></span>
@@ -36,12 +36,5 @@ titlename: 关于
 
 <left><img src="/public/img/jianjie.jpg" style="width:30%"></left>
 
-<hr>
-<a href="{{ site.author.weibo }}" target="_blank">
-  <i class="fa fa-weibo fa-lg" style="color:#f8aba6;"></i>
-</a>
-<a href="{{ site.author.music }}">
-  <i class="fa fa-music fa-lg" style="color:#f8aba6;"></i>
-</a>
-<hr>
+
 
