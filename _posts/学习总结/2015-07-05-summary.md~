@@ -20,8 +20,8 @@ pid:将信号传给哪个进程 &emsp;sigum:信号编号
 注：SIGKILL与SIGSTOP不能用于更改信号的处理方式，此函数不会阻塞  
 signum:信号编号&emsp;查看方法：kill -l  
 handler:  
-SIG_IGN:忽略  
-SIG_DFL:执行系统默认动作  
+SIG\_IGN:忽略  
+SIG\_DFL:执行系统默认动作  
 信号处理函数名  
 返回两次：第一次返回NULL，下一次返回此信号上一次注册的信号处理函数地址  
 4、信号集和信号阻塞集  
