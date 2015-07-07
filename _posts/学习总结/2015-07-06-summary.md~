@@ -1,0 +1,68 @@
+---
+layout: post
+title: 7月6日笔记-进程
+category: 学习总结
+tags: 进程
+keywords: 
+description:
+---
+[**学习内容出自：一步步学习Linux多任务编程**](http://blog.csdn.net/tennysonsky/article/details/45847551)  
+
+- **进程间通信：管道**  
+管道：叫无名管道，是UNIX系统IPC最古老的形式  
+无名管道是一种特殊类型的文件  
+在默认情况下，从管道中读写数据，最主要的特点是**阻塞**问题：  
+1、没数据会阻塞  
+2、缓冲区满时，write()也会阻塞  
+3、通信过程中，别的进程先结束后，当前读端口关闭后，write()所在的进程会退出  
+- **进程间通信：命名管道**  
+命名管道：FIFO、有名管道、FIFO文件  
+命名管道的创建：`int mkfifo(const char *pathname,mode_t mode);`  
+阻塞特性：  
+1、只读等只写，只写等只读  
+2、FIFO中无数据，read()阻塞  
+3、**通信过程中**若写进程先退出了，即便FIFO中无数据，read()从FIFO中读数据也不阻塞；若写进程重新运行，则read()恢复阻塞  
+4、**通信过程中**读进程退出后，写进程向命名管道内写数据，写进程也会退出  
+5、缓冲区满时write()也会阻塞  
+**命名管道非阻塞标志操作**  
+O\_NONBLOCK  
+特点：对于open()来说，  
+先以只读方式打开，若无进程为写而打开一个FIFO，open()能成功  
+先以只写方式打开，若无进程为读而打开一个FIFO，open()出错  
+对于read(),write()来说不阻塞  
+- **消息队列**    
+消息队列提供了一种在两个不相关的进程之间传递数据的高效方法  
+特点：消息队列可实现消息的随机查询，可按消息的类型读取  
+消息队列是消息的链表，存在内存中，由内核维护，只有内核重启或人工删除消息队列时，该消息队列才会被删除。若不人工删除消息队列，消息队列会一直存在系统中  
+key值：可以保证是同一个消息队列  
+消息队列表示符：保证不同的进程可以相互通信  
+同一个消息类型保证某个进程取出是对方的信息  
+key值的获取：`key_t ftok(const char *pathname,int proj_id);`  
+消息队列的创建：`int msgget(key_t key,int msgflg);`  
+查看消息队列：`ipcs -q`  
+删除消息队列：`ipcrm -q 消息队列ID`  
+**消息队列的读写操作**  
+1、了解消息队列的格式  
+2、添加：  
+`int msgsnd(int msqid,const void *msgp,size_t msgsz,int msgglg);`  
+获取：  
+`ssize_t msgrcv(int msqid,void *msgp,size_t msgsz,long msgtyp,int msgflg)`  
+注：在获取某类型消息时，若队列中有多条此类型消息，则获取最先添加的消息（先进先出原则）  
+**消息队列的控制：**  
+`int msgctl(int msqid,int cmd,struct msqid_ds *buf);`  
+- **共享内存**  
+注：多个进程之间对一个给定存储区访问互斥：若一个进程正在向共享内存区写数据，则在它做完这一步操作前，别的进程不应当去读写这些数据  
+**常用函数**    
+1、创建或打开一块内存：  
+`int shmget(key_t key,size_t size,int shmflg);`  
+查看共享内存：`ipcs -m`  
+删除共享内存：`ipcrm -m 号码`  
+2、共享内存映射：让进程和内存建立一种联系  
+`void *shmat(int shmid,const void *shmaddr,int shmflg)`  
+返回值：共享内存段映射地址  
+解除共享内存映射：`int shmdt(const void,*shmaddr);`  
+注：这仅仅是断开联系并不删除共享内存  
+共享内存控制  
+`int shmctl(int shmid,int cmd,struct shmid_ds *buf);`  
+
+ 
