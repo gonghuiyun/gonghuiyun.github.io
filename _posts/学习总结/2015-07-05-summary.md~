@@ -1,11 +1,12 @@
 ---
 layout: post
-title: 7月5日总结-进程
+title: 7月5日笔记-进程
 category: 学习总结
 tags: 进程
 keywords: 
 description:
 ---
+[**学习内容出自：一步步学习Linux多任务编程**](http://blog.csdn.net/tennysonsky/article/details/45847551)  
 - **进程间通信概述**  
 进程是一个独立的资源分配单元，不同进程之间的资源是独立的、没有关联的。不能在一个进程中直接访问另一个进程的资源。  
 进程间通信的目的：数据传输、通知事件、资源共享、进程控制  
@@ -13,7 +14,7 @@ description:
 信号是Linux进程间通信最古老的方式  
 **信号的常用操作：**  
 1、发送信号：`int kill(pid_t pid,int sigum);`  
-pid:将信号传给哪个进程 &emsp;sigum:信号编号
+pid:将信号传给哪个进程 &emsp;sigum:信号编号  
 2、等待信号：`int pause(void)`  
 没收到信号则阻塞，若收到则中断当前进程  
 3、处理信号:执行系统默认、忽略、执行自定义信号处理函数  
