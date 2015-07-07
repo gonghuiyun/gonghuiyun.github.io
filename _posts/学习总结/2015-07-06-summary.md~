@@ -43,7 +43,8 @@ key值的获取：`key_t ftok(const char *pathname,int proj_id);`
 删除消息队列：`ipcrm -q 消息队列ID`  
 **消息队列的读写操作**  
 1、了解消息队列的格式  
-2、添加：  
+2、  
+添加：  
 `int msgsnd(int msqid,const void *msgp,size_t msgsz,int msgglg);`  
 获取：  
 `ssize_t msgrcv(int msqid,void *msgp,size_t msgsz,long msgtyp,int msgflg)`  
