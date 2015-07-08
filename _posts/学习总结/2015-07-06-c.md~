@@ -6,6 +6,8 @@ tags: C语言
 keywords: 
 description:
 ---
+[指针解释工具](http://cdecl.org/)  
+
 ### **关于函数指针：**  
 
 `int (*comp)(void *,void *)`  
@@ -16,7 +18,7 @@ comp是一个函数，返回一个指向int类型的指针
 `void *(*start_routine)(void *)`  
 start\_routine是一个指向函数*start_routine的指针，返回一个指向void类型的指针，函数的参数是void类型的指针  
 
-**一个例子：**不同类型的变量赋值之前要进行类型转换  
+**注意：**不同类型的变量赋值之前要进行类型转换  
 
 ```c
 #include <stdio.h>
