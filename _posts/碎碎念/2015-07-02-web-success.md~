@@ -2,7 +2,7 @@
 layout: post
 title: 搭好博客啦
 category: 碎碎念
-tags: 博客
+tags: 
 keywords: 
 description:
 ---
