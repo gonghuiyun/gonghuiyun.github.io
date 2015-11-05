@@ -1,0 +1,344 @@
+---
+layout: post
+title: 单片机总结——双机通信（2）
+category: 学习总结
+tags: 单片机总结
+keywords: 
+description:
+---
+> 第二部分：主函数和子函数说明，以及调试过程中的问题
+
+###**主机相关的函数**
+####**主函数及中断函数**
+``` c
+while(1)
+	{
+		while(TFR==1)
+		fooddog();
+		change_value();//	转换为可显示的值
+		display_value();//显示电压值			
+		send_data();//发送电压值			
+		while(PRINT_FLAG==1)//打印电压值
+		{
+			print_votage();
+			PRINT_FLAG=0;
+			delay2();
+		}		
+	}
+	void get_key(void) interrupt 0 using 1
+{
+	int k;
+	COMD_8279=0x40;
+	k=DAT_8279;
+	if(k&0x03)
+	{
+		PRINT_FLAG=1;
+	}
+}
+void get_ADvalue() interrupt 2 using 2
+{
+	ADC_0809_1=0;
+	AD_value=ADC_0809_1;
+}
+
+```
+
+说明：
+中断函数的格式为`void 函数名() interrupt m [using n]`，80C51共有5个中断，m为中断源编号。
+
+<p>
+	<table style="width:20%;" cellpadding="2" cellspacing="0" border="1" bordercolor="#000000">
+		<tbody>
+			<tr>
+				<td style="text-align:center;">
+					&nbsp;m值&nbsp;<br />
+				</td>
+				<td style="text-align:center;">
+					中断种类<br />
+				</td>
+			</tr>
+			<tr>
+				<td style="text-align:center;">
+					0
+				</td>
+				<td style="text-align:center;">
+					外部中断0<br />
+				</td>
+			</tr>
+			<tr>
+				<td style="text-align:center;">
+					1
+				</td>
+				<td style="text-align:center;">
+					定时器0中断<br />
+				</td>
+			</tr>
+			<tr>
+				<td style="text-align:center;">
+					2
+				</td>
+				<td style="text-align:center;">
+					外部中断1<br />
+				</td>
+			</tr>
+			<tr>
+				<td style="text-align:center;">
+					3
+				</td>
+				<td style="text-align:center;">
+					定时器1 中断<br />
+				</td>
+			</tr>
+			<tr>
+				<td style="text-align:center;">
+					4
+				</td>
+				<td style="text-align:center;">
+					串行口中断<br />
+				</td>
+			</tr>
+		</tbody>
+	</table>
+<br />
+<br />
+</p>
+ 
+这里用外部中断0获得键值，`COMD_8279=0x40`中的0x40是读键盘值命令，键值有0x00~0x0f，分别对应于键盘S1~S16。当S3按下时，打印机标志PRINT_FLAG置1，打印机开始打印。
+外部中断1使AD采样，并将转换得来的电压值保存于变量AD_value中。其中`ADC_0809_1=0;`一定要加，因为ADC0809每次采样后都要进行一次复位，否则将无法工作.    
+
+
+####**显示电压的相关子函数**  
+
+#####**电压值的转换**  
+ 
+``` c
+void change_value()//转换为可显示的值
+{
+ 	AD_value=((AD_value*50)/255);
+ 	Integer=AD_value/10;
+ 	Decimals=AD_value%10;
+}
+
+```
+说明：  
+（1）用数字信号表示模拟信号的公式由来
+由于我们想要显示的是输入的模拟信号，而ADC0809往单片机输出的数据为数字信号，因此由模拟-数字对应关系，推出模拟信号的值，其中5V为参考电压（单片机的电源电压为5v）。  
+
+![Alt text](/public/danpianji/2015110433.png)
+
+得：
+![Alt text](/public/danpianji/2015110434.png)
+
+然而这个公式与函数里的公式相比还有所不同。最终公式的由来：由于ADC0809输出为11111111时，输入电压为5V；ADC0809输出为00000000时，输入电压为0V；ADC0809输出为10000000时，输入电压为2.5V；由于单片机进行数学运算时结果只能取整数部分，这样2.5的小数部分0.5将无法显示。因此要让模拟信号值显示扩大十倍，即显示为25，这样就能完整的保留2.5中的整数和小数部分了。由公式看出，要达到此目的，应在右边的分子乘以10，于是得到了最终的公式。
+
+![Alt text](/public/danpianji/2015110435.png)
+
+
+（2）第二三行代码解释
+``` c
+Integer=AD_value/10;
+Decimals=AD_value%10;
+```
+由上述公式容易看出，2.5的整数部分为25整除10得来，小数部分为25除以10取余数而来。其中AD_value的值为外部中断1获取并经过ADC0809转换成的数字量（见主函数）。
+#####**电压值的显示**
+``` c
+void display_value()
+{
+	uint i;
+	COMD_8279=0x90;
+	DAT_8279=LED[Integer]|0x01;
+	DAT_8279=LED[Decimals];
+	for(i=2;i<8;i++)
+	DAT_8279=0x00;
+}
+
+```
+说明：  
+`COMD_9279=0x90`中的0x90为显示命令，此时若往数据口地址赋数字（段码表的位置），则数码管就能显示相应的数字。
+由于初始化时显示方式设置为8字符显示，左端入口方式，即从第1位开始显示，再显示第二位...依次显示到第八位。
+然而从电路图上看，我们只接了6个数码管，而显示电压的子函数只显示两位，因此除了前两位显示以外，其它位全部熄灭。`DAT_8279=0x00`中0x00在段码表中表示的是熄灭。`DAT_8279=LED[Integer]|0x01;`中0x01表示小数点。
+####**打印的相关的子函数**
+打印相关的函数有如下三个，要使打印机工作，除了要求BUSY不等于1（打印机空闲）外，还应使得STB处于低电平状态。为了使打印结束，要将STB恢复为高电平。由于打印一个字符需要一定的时间，所以应该适当延长STB为低电平的时间。`_nop_();`正是能做到这一点。要打印什么字符，只要将字符或者表示字符的命令写入打印机的入口地址PRINT_PA即可。  
+
+``` c
+void print_byte(uchar i)	//打印比特
+{
+	while (BUSY==1)//判断打印机是否繁忙
+		fooddog();
+	PRINT_PA=i;
+	STB=0;
+	_nop_();
+	_nop_();
+	_nop_();
+	STB=1;
+}
+void print_string(uchar *str) //打印字符串
+{
+	while (*str)
+	{
+		print_byte(*(str++));
+	}
+}
+void print_votage()	//打印电压
+{
+	/*初始化打印机*/
+	print_byte(0x1b);
+	print_byte(0x40);
+	print_string("voltage");
+	print_byte(0x3d);
+	print_byte(PRINT_NUMBER[Integer]);//打印整数部分
+	print_byte(0x2e);//打印小数点
+	print_byte(PRINT_NUMBER[Decimals]);//打印小数部分
+	print_byte(0x56);//打印V
+	print_byte(0x0d);//换行
+}
+```
+用的打印机的字符集如下图：  
+
+![Alt text](/public/danpianji/1446650342997.png)
+
+####**发送相关的子函数**
+``` c
+void send_byte(uchar byte)//发送函数
+{
+	RE_DE=1;//设置485为发送状态
+	SBUF=byte;
+	while(!TI);
+	TI=0;
+	RE_DE=0;//设置为接收状态	
+}
+void send_data()//发送电压值
+{
+	send_byte(Integer);
+	delay2();
+	send_byte(Decimals);
+	delay2();	
+}
+```
+发送相关的子函数共有两个，主要在于send_byte（）这个函数。
+其中RE_DE定义为P1^5，主要功能是控制RS485的发送/接收是否开启（RE_DE=1时为允许发送，RE_DE=0时为允许接收）。而根据单片机的串口相关知识知，TI,RI两个寄存器初始值都是0，当发送完一个比特后，会自动置1，需要软件清零，否则将不会继续发送或者接收。
+程序中`while(!TI);`和`TI=0;`是为了使程序阻塞至发送完成的。
+####延时函数
+``` c
+void delay1(uint x)//延时为x*5ms
+{
+	uint i,j;
+	for(i=0;i<x;i++)
+		for(j=0;j<600;j++);
+}
+void delay2()//发送字节延时函数
+{
+	uint i;
+	for(i=0;i<125;i++);
+}
+```
+说明：万能的延时函数共有两种，一种是带参数，一种是不带参数。
+由单片机的机器周期为12个时钟周期，时钟周期就是振荡周期（振荡周期为晶振频率的倒数），计算得单片机的机器周期约为1us。至于为什么delay1是延时x*5ms还不得而知。
+###从机相关函数
+``` c
+void receive_byte(void) interrupt 4 using 3
+{	
+	if(RI)
+	{
+		rx_buff[j]=SBUF;			
+	}
+	RI=0;
+	j++;
+	if(j==2)
+	{	
+		j=0;
+		Integer=rx_buff[0];
+		Decimals=rx_buff[1];
+		display_value();
+	}
+}
+```
+说明：  
+通过串口中断接收数据，每次收满两个数据就显示。但是这样存在一个问题，不等j自加就可能连续收到两个数据，因此rx_buff中的数据并不是按照Integer和Decimals的顺序排列的，此时显示是错乱的（如本该显示2.1，结果是2.1和1.2交替显示的，且2.1和1.2交替显示得太快，数码管上根本看不清是什么数字）。若是将主函数中发送电压函数，每发送一个数据进行延时，不但解决不了这个问题，且主函数的数码管开始闪烁（如主函数若显示2.1，过一会2.1会闪一下，如此交替，原因未明）。
+### **调试过程中的问题与一些想法**
+- 同一个程序，换两台电脑进行编译，出来两个结果。
+如从机程序，若在电脑1进行编译，出来的结果是数码管第一位闪烁不到1S就全部熄灭了，若关机后立刻重启，连第一个数码管都不闪了。只有关机久一些再重启第一位才会再次闪烁。若在电脑2进行编译，结果如在从机相关函数中分析的一样，的确显示两位，只不过是各位和小数部分不断交换位置显示。原因未明。打算将`j++;`与`RI=0`语句对调后再进行尝试。
+- 主机的主函数越过test()函数不执行
+主机的主函数在进入while(1)之前本来有一个test()函数，用来显示8.8.8.8.8.8的，然而数码管在进入while(1)之前始终不亮，原因未明。  
+
+**主机的主函数：**  
+
+``` c
+	test();//开机数码管全显示
+	while(1)
+	{
+		while(TFR==1)
+		fooddog();
+		change_value();//	转换为可显示的值
+		display_value();//显示电压值		
+		
+		send_data();//发送电压值			
+		while(PRINT_FLAG==1)//打印电压值
+		{
+			print_votage();
+			PRINT_FLAG=0;
+			delay2();
+		}		
+	}
+
+```  
+
+
+**test()子函数：**  
+
+``` c
+void test(void)//测试数码管函数
+{	
+	uchar i;
+	COMD_8279=0x90;
+	for(i=0;i<8;i++)
+	{
+		DAT_8279=LED[8]|0x01;
+	}
+}
+
+```  
+
+- 解决从机显示错乱的思路
+由从机的中断函数可看出，在显示的的过程中，RI已经清零，这时候接收到的数据不知是Integer先还是Decimals先，因此从逻辑上分析能解决显示错乱，但仍无法解决个位数与十位数对调的问题。因此欲加上一个状态标识，在主机发送电压值之前发送一个标识比特，0xaa，只有收完0xaa时才接受下一个比特，且只有成功进入状态3时才进行显示。然而，实际运行后，主机不但显示电压值在闪烁，而且从机无法进入判断语句，原因未明。  
+
+**按此思路写的从机中断函数：**  
+
+``` c
+void receive_byte(void) interrupt 4 using 3
+{
+	if(RI)
+	{
+		rx_buff[j]=SBUF;
+		if(BYTE_COM==0)
+		{
+			if(rx_buff[j]==0xaa)
+				BYTE_COM=1;
+				j++;
+			else
+			BYTE_COM=0;		
+		}
+		else if(BYTE_COM==1)
+		{
+			BYTE_COM=2;
+			Integer=rx_buff[j];
+			j++;
+		}
+		else if(BYTE_COM==2)
+		{
+			BYTE_COM=0;
+			Decimals=rx_buff[j];
+			display_value();
+			j=0;							
+		}
+		RI=0;
+	}
+}
+
+```
+
+- 加入握手协议后出现的问题
+为了保证通信更可靠，要求主机发送0xbb，从机回复0x55，在主机里加一个接收中断函数，用于接收从机的回复，主机收到0x55才进行通信。然而，最终实验结果是，主机数码管显示不断的闪动，从机显示一闪而过就全部熄灭了，且显示的数值还是不正确的。从主机的数码管闪动可以推测出，主机是有收到信号的，而从机仅进入中断一次就再也进不去了。与原来的程序相比不过是多了一个判断语句，因此推测从机至始至终都没有进入判断语句。  
+
+### **感叹一下**
+还存在很多问题啊，慢慢尝试吧...
