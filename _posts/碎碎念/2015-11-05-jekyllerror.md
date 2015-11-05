@@ -6,8 +6,7 @@ tags: git
 keywords: 
 description:
 ---
-###**执行jekyll serve出现的几个错误以及解决方法**
-####**1、提示jekyll未安装**
+###**1、提示jekyll未安装**
 这个问题我郁闷了好久，重新安装了jekyll仍出现这样的提示。试着执行了`ruby -v`，却看不到已经安装的ruby的版本。于是执行`rvm use 2.0.0`
 可是又出现了如下错误提示：  
 
@@ -23,7 +22,7 @@ jekyll 3.0.0 | Error:  Permission denied @ rb_sysopen
 ```
 再一检查，发现是因为不是root用户。于是切换root后，重新执行`bash -login`之后再执行`rvm use 2.0.0`就好了。
 
-####**2、出现如下提示：**
+###**2、出现如下提示：**
 ```
 error > Deprecation: You appear to have pagination turned on, but you haven’t included the jekyll-paginate gem. Ensure you have gems: [jekyll-paginate] in your configuration file.
 ```
